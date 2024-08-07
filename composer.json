@@ -1,0 +1,21 @@
+{
+    "name": "brokenice/fatturaelettronica",
+    "description": "Client per invio/ricezione fatture elettroniche tramite https://fatturaelettronica.brokenice.it",
+    "type": "library",
+    "require": {
+        "spatie/laravel-webhook-server": "^3.8",
+        "guzzlehttp/guzzle": "^7.9",
+        "spatie/ray": "^1.41"
+    },
+    "autoload": {
+        "psr-4": {
+            "Brokenice\\FatturaElettronica\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "luca becchetti",
+            "email": "luca.becchetti@brokenice.it"
+        }
+    ]
+}
