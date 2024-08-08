@@ -4,7 +4,7 @@
 
 The `Fattura Elettronica PHP Library` provides a client for interacting with the Fattura Elettronica service. It allows you to send invoices and handle incoming webhooks for the Fattura Elettronica API.
 
-- **API Documentation:** [Fattura Elettronica API](https://fatturaelettronica.brokenice.it)
+- **API Documentation:** [Fattura Elettronica API](https://gestionefatture.brokenice.it)
 - **Registration and Guide:** [Gestionefatture](https://gestionefatture.brokenice.it)
 
 ## Installation

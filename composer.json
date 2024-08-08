@@ -1,6 +1,6 @@
 {
     "name": "brokenice/fatturaelettronica",
-    "description": "Client per invio/ricezione fatture elettroniche tramite https://fatturaelettronica.brokenice.it",
+    "description": "Client per invio/ricezione fatture elettroniche tramite https://gestionefatture.brokenice.it",
     "type": "library",
     "require": {
         "spatie/laravel-webhook-server": "^3.8",
