@@ -19,7 +19,7 @@ class FatturaElettronicaClient
      * Endpoint per il sistema di fatturazione
      * @var string
      */
-    public string $endPoint = 'http://127.0.0.1:8002';
+    public string $endPoint = 'https://gestionefatture.brokenice.it';
 
     /**
      * Email to authenticate
@@ -43,12 +43,16 @@ class FatturaElettronicaClient
      * @param string $email
      * @param string $password
      * @param string $signature
+     * @param string|null $endPoint
      */
-    public function __construct(string $email, string $password, string $signature)
+    public function __construct(string $email, string $password, string $signature, string $endPoint = null)
     {
         $this->email = $email;
         $this->password = $password;
         $this->signature = $signature;
+        if (!is_null($endPoint)) {
+            $this->endPoint = $endPoint;
+        }
     }
 
     /**
@@ -72,7 +76,7 @@ class FatturaElettronicaClient
             $client = new Client();
 
             // Make the API call to send the invoice
-            $response = $client->get($this->endPoint . '/api/sdicoop/customer', [
+            $response = $client->get($this->getEndPoint() . '/api/sdicoop/customer', [
                 'headers' => [
                     'Authorization' => 'Bearer ' . $token,
                     'Accept' => 'application/json',
@@ -98,7 +102,7 @@ class FatturaElettronicaClient
     {
         $oauth2Client = new Client();
 
-        $response = $oauth2Client->post($this->endPoint."/sdicoop/login", [
+        $response = $oauth2Client->post($this->getEndPoint()."/sdicoop/login", [
             'headers' => [
                 'Accept' => 'application/json',
             ],
@@ -110,5 +114,14 @@ class FatturaElettronicaClient
 
         $responseData = json_decode($response->getBody(), true);
         return $responseData['token'];
+    }
+
+    /**
+     * Get current endPoint
+     * @return string
+     */
+    protected function getEndPoint(): string
+    {
+        return $this->endPoint;
     }
 }

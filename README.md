@@ -69,6 +69,16 @@ class FatturaElettronicaWebhook extends BaseWebhook
         // Handle the received FileSdI
         echo 'File received successfully: ' . $fileSdI;
     }
+    
+    public function failed(Exception $exception): void
+    {
+        // Handle webhook failed
+    }
+
+    public function signatureSecret(): string
+    {
+        return 'mysignaure';
+    }
 }
 ```
 
