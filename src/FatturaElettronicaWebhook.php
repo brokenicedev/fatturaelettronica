@@ -78,23 +78,23 @@ abstract class FatturaElettronicaWebhook
     /**
      * Triggered when new invoice did receive from gateway
      * @param array $params
-     * @return void
+     * @return mixed
      */
-    public abstract function received(array $params): void;
+    public abstract function received(array $params): mixed;
 
     /**
      * Triggered when an invoice receive an update status
      * @param FileSdI $fileSdI
-     * @return void
+     * @return mixed
      */
-    public abstract function updated(FileSdI $fileSdI): void;
+    public abstract function updated(FileSdI $fileSdI): mixed;
 
     /**
      * Triggered when there is an error sending an invoice
      * @param Exception $exception
-     * @return void
+     * @return mixed
      */
-    public abstract function failed(Exception $exception): void;
+    public abstract function failed(Exception $exception): mixed;
 
     /**
      * Signature to sign all the requests
