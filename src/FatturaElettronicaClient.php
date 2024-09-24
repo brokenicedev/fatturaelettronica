@@ -60,11 +60,11 @@ class FatturaElettronicaClient
      * L'XML deve corrispondere al formato ministeriale: https://www.agenziaentrate.gov.it/portale/web/guest/specifiche-tecniche-versione-1.8
      * Il sistema aggiungerà o modificherà la sezione relativa ai dati di trasmissione (sezione FatturaElettronicaHeader/DatiTrasmissione dell'XML)
      * @param string $xml
-     * @param string $documentNumber
+     * @param array $parameters
      * @return void
      * @throws Exception
      */
-    public function sendInvoice(string $xml, ...$parameters): void
+    public function sendInvoice(string $xml, array $parameters): void
     {
         try {
             $token = $this->getAccessToken();
