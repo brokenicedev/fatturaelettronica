@@ -8,6 +8,22 @@ abstract class FatturaElettronicaWebhook
 {
 
     /**
+     * @var string[]
+     */
+    public static array $types = [
+        'File metadati' => '_MT_',
+        'Notifica di scarto' => '_NS_',
+        'Notifica di consegna' => '_NC_',
+        'Ricevuta di consegna' => '_RC_',
+        'Mancata consegna' => '_MC_',
+        'Notifica esito committente' => '_EC_',
+        'Notifica scarto esito committente' => '_SE_',
+        'Notifica esito versione' => '_NE_',
+        'Notifica decorrenza termini versione' => '_DT_',
+        'Avvenuta trasmissione impossibilità recapito' => '_AT_',
+    ];
+
+    /**
      * @return string|bool
      * @throws Exception
      */
@@ -101,5 +117,19 @@ abstract class FatturaElettronicaWebhook
      * @return string
      */
     public abstract function signatureSecret(): string;
+
+    /**
+     * @param $fileName
+     * @return string
+     */
+    public function typeFromName($fileName): string
+    {
+        foreach (static::$types as $key => $value) {
+            if (str_contains($fileName, $value)) {
+                return str_replace("_", "", $value);
+            }
+        }
+        return 'FE';
+    }
 
 }
