@@ -40,6 +40,11 @@ class FatturaElettronicaClient
     public string $signature;
 
     /**
+     * @var bool
+     */
+    public static bool $sandbox = false;
+
+    /**
      * @param string $email
      * @param string $password
      * @param string $signature
@@ -83,6 +88,7 @@ class FatturaElettronicaClient
                     'Accept' => 'application/json',
                 ],
                 'form_params' => [
+                    'sandbox' => static::$sandbox,
                     'xml' => $xml,
                     ...$parameters
                 ]
@@ -118,6 +124,15 @@ class FatturaElettronicaClient
 
         $responseData = json_decode($response->getBody(), true);
         return $responseData['token'];
+    }
+
+    /**
+     * @return $this
+     */
+    public function sandbox(): self
+    {
+        static::$sandbox = true;
+        return $this;
     }
 
     /**
