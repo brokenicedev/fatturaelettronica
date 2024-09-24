@@ -28,24 +28,32 @@ abstract class FatturaElettronicaWebhook
             // Decode JSON payload if applicable
             $data = json_decode($input, true);
 
-            // Check for request integrity
+            // If type is missing is a received notification
             if (
-                !array_key_exists('SdiId', $data) ||
-                !array_key_exists('IdentificativoSdI', $data) ||
-                !array_key_exists('NomeFile', $data) ||
-                !array_key_exists('Tipo', $data) ||
-                !array_key_exists('File', $data)
+                !array_key_exists('Tipo', $data) &&
+                array_key_exists('IdentificativoSdI', $data) &&
+                array_key_exists('NomeFile', $data)
             ) {
-                // For example, if processing is successful
-                http_response_code(422); // HTTP 200 OK
-                header('Content-Type: application/json');
-                // Process response if needed
-                return json_encode([
-                    'message' => 'missing payload data'
-                ]);
-            }
+                $this->received($data);
+            } else {
+                // Check for request integrity
+                if (
+                    !array_key_exists('SdiId', $data) ||
+                    !array_key_exists('IdentificativoSdI', $data) ||
+                    !array_key_exists('NomeFile', $data) ||
+                    !array_key_exists('File', $data)
+                ) {
+                    // For example, if processing is successful
+                    http_response_code(422); // HTTP 200 OK
+                    header('Content-Type: application/json');
+                    // Process response if needed
+                    return json_encode([
+                        'message' => 'missing payload data'
+                    ]);
+                }
 
-            $this->received(new FileSdI((object)$data));
+                $this->updated(new FileSdI((object)$data));
+            }
             // For example, if processing is successful
             http_response_code(200); // HTTP 200 OK
             header('Content-Type: application/json');
@@ -68,18 +76,28 @@ abstract class FatturaElettronicaWebhook
     }
 
     /**
+     * Triggered when new invoice did receive from gateway
+     * @param array $params
+     * @return void
+     */
+    public abstract function received(array $params): void;
+
+    /**
+     * Triggered when an invoice receive an update status
      * @param FileSdI $fileSdI
      * @return void
      */
-    public abstract function received(FileSdI $fileSdI): void;
+    public abstract function updated(FileSdI $fileSdI): void;
 
     /**
+     * Triggered when there is an error sending an invoice
      * @param Exception $exception
      * @return void
      */
     public abstract function failed(Exception $exception): void;
 
     /**
+     * Signature to sign all the requests
      * @return string
      */
     public abstract function signatureSecret(): string;

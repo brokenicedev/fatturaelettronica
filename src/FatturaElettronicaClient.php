@@ -60,10 +60,11 @@ class FatturaElettronicaClient
      * L'XML deve corrispondere al formato ministeriale: https://www.agenziaentrate.gov.it/portale/web/guest/specifiche-tecniche-versione-1.8
      * Il sistema aggiungerà o modificherà la sezione relativa ai dati di trasmissione (sezione FatturaElettronicaHeader/DatiTrasmissione dell'XML)
      * @param string $xml
+     * @param string $documentNumber
      * @return void
      * @throws Exception
      */
-    public function sendInvoice(string $xml): void
+    public function sendInvoice(string $xml, ...$parameters): void
     {
         try {
             $token = $this->getAccessToken();
@@ -76,12 +77,15 @@ class FatturaElettronicaClient
             $client = new Client();
 
             // Make the API call to send the invoice
-            $response = $client->get($this->getEndPoint() . '/api/sdicoop/customer', [
+            $response = $client->post($this->getEndPoint() . '/api/sdicoop/send-invoice', [
                 'headers' => [
                     'Authorization' => 'Bearer ' . $token,
                     'Accept' => 'application/json',
                 ],
-                'xml' => $xml
+                'form_params' => [
+                    'xml' => $xml,
+                    ...$parameters
+                ]
             ]);
 
             if($response->getStatusCode() !== 200) {
