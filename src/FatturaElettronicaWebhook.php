@@ -46,7 +46,7 @@ abstract class FatturaElettronicaWebhook
 
             // Check for errors
             if (array_key_exists('Error', $data) && !empty(trim($data['Errore']))) {
-                $this->failed($data['Errore']);
+                $this->failed($data);
             }
             // If type is missing is a received notification
             if (
@@ -82,7 +82,7 @@ abstract class FatturaElettronicaWebhook
                 'message' => 'file received correctly'
             ]);
         } catch (Exception $e) {
-            $this->failed($e->getMessage());
+            \Log::error($e->getMessage());
 
             // For example, if processing is successful
             http_response_code(400); // HTTP 200 OK
