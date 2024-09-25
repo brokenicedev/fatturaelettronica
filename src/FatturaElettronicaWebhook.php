@@ -44,6 +44,10 @@ abstract class FatturaElettronicaWebhook
             // Decode JSON payload if applicable
             $data = json_decode($input, true);
 
+            // Check for errors
+            if (array_key_exists('Error', $data) && !empty(trim($data['Errore']))) {
+                $this->failed($data['Errore']);
+            }
             // If type is missing is a received notification
             if (
                 !array_key_exists('Tipo', $data) &&
@@ -78,7 +82,7 @@ abstract class FatturaElettronicaWebhook
                 'message' => 'file received correctly'
             ]);
         } catch (Exception $e) {
-            $this->failed($e);
+            $this->failed($e->getMessage());
 
             // For example, if processing is successful
             http_response_code(400); // HTTP 200 OK
@@ -107,10 +111,10 @@ abstract class FatturaElettronicaWebhook
 
     /**
      * Triggered when there is an error sending an invoice
-     * @param Exception $exception
+     * @param mixed $exception
      * @return mixed
      */
-    public abstract function failed(Exception $exception): mixed;
+    public abstract function failed(mixed $exception): mixed;
 
     /**
      * Signature to sign all the requests
