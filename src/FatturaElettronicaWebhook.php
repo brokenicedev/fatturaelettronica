@@ -29,14 +29,14 @@ abstract class FatturaElettronicaWebhook
      */
     public function handle(): ?bool
     {
-        $headerData = getallheaders();
+        $headerData = array_change_key_case(getallheaders(), CASE_LOWER);
         // Retrieve raw POST data from php://input
         $input = file_get_contents('php://input');
 
         $validator = new DefaultSignatureValidator();
 
         try {
-            $isValid = $validator->isValid($headerData['Signature'], $this->signatureSecret(), $input);
+            $isValid = $validator->isValid($headerData['signature'], $this->signatureSecret(), $input);
             if (!$isValid) {
                 throw new Exception('Invalid signature');
             }
