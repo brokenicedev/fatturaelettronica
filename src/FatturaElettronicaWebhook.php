@@ -3,7 +3,6 @@
 namespace Brokenice\FatturaElettronica;
 
 use Exception;
-use JetBrains\PhpStorm\NoReturn;
 
 abstract class FatturaElettronicaWebhook
 {
@@ -69,7 +68,7 @@ abstract class FatturaElettronicaWebhook
             }
 
         } catch (Exception $e) {
-            \Log::error($e->getMessage());
+            error_log($e->getMessage());
             $this->response('Unable to generate sdi file', 400);
         }
 
@@ -80,7 +79,7 @@ abstract class FatturaElettronicaWebhook
      * @param string $message
      * @return void
      */
-    #[NoReturn] public function ack(string $message = 'ACK'): void
+    public function ack(string $message = 'ACK'): void
     {
         $this->response($message, 200);
     }
@@ -90,7 +89,7 @@ abstract class FatturaElettronicaWebhook
      * @param string $message
      * @return void
      */
-    #[NoReturn] public function nack(string $message = 'NACK'): void
+    public function nack(string $message = 'NACK'): void
     {
         $this->response($message, 400);
     }
@@ -100,7 +99,7 @@ abstract class FatturaElettronicaWebhook
      * @param int $status
      * @return void
      */
-    #[NoReturn] protected function response(mixed $message, int $status = 200): void
+    protected function response(mixed $message, int $status = 200): void
     {
         // Set HTTP status code
         http_response_code($status); // HTTP 401 Unauthorized
