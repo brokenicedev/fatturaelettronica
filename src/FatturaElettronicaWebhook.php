@@ -36,9 +36,15 @@ abstract class FatturaElettronicaWebhook
         $validator = new DefaultSignatureValidator();
 
         try {
-            $isValid = $validator->isValid($headerData['signature'], $this->signatureSecret(), $input);
+            $isValid = $validator->isValid($headerData['Signature'], $this->signatureSecret(), $input);
             if (!$isValid) {
-                throw new Exception('Invalid signature');
+                // For example, if processing is successful
+                http_response_code(401); // HTTP 400 OK
+                header('Content-Type: application/json');
+                // Process response if needed
+                return json_encode([
+                    'message' => 'Invalid signature'
+                ]);
             }
 
             // Decode JSON payload if applicable
@@ -46,15 +52,13 @@ abstract class FatturaElettronicaWebhook
 
             // Check for errors
             if (array_key_exists('Error', $data) && !empty(trim($data['Errore']))) {
-                $this->failed($data);
-            }
-            // If type is missing is a received notification
-            if (
+                return $this->failed($data);
+            } else if (
                 !array_key_exists('Tipo', $data) &&
                 array_key_exists('IdentificativoSdI', $data) &&
                 array_key_exists('NomeFile', $data)
             ) {
-                $this->received($data);
+                return $this->received($data);
             } else {
                 // Check for request integrity
                 if (
@@ -72,20 +76,14 @@ abstract class FatturaElettronicaWebhook
                     ]);
                 }
 
-                $this->updated(new FileSdI((object)$data));
+                return $this->updated(new FileSdI((object)$data));
             }
-            // For example, if processing is successful
-            http_response_code(200); // HTTP 200 OK
-            header('Content-Type: application/json');
-            // Process response if needed
-            return json_encode([
-                'message' => 'file received correctly'
-            ]);
+
         } catch (Exception $e) {
             \Log::error($e->getMessage());
 
             // For example, if processing is successful
-            http_response_code(400); // HTTP 200 OK
+            http_response_code(400); // HTTP 400 OK
             header('Content-Type: application/json');
             // Process response if needed
             return json_encode([
