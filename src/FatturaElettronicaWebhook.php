@@ -36,15 +36,9 @@ abstract class FatturaElettronicaWebhook
         $validator = new DefaultSignatureValidator();
 
         try {
-            $isValid = $validator->isValid($headerData['signature'], $this->signatureSecret(), $input);
+            $isValid = $validator->isValid($headerData['signature'] ?? null, $this->signatureSecret(), $input);
             if (!$isValid) {
-                // For example, if processing is successful
-                http_response_code(401); // HTTP 400 OK
-                header('Content-Type: application/json');
-                // Process response if needed
-                return json_encode([
-                    'message' => 'Invalid signature'
-                ]);
+                $this->response('Invalid signaure', 401);
             }
 
             // Decode JSON payload if applicable
@@ -52,13 +46,13 @@ abstract class FatturaElettronicaWebhook
 
             // Check for errors
             if (array_key_exists('Error', $data) && !empty(trim($data['Errore']))) {
-                return $this->failed($data);
+                $this->failed($data);
             } else if (
                 !array_key_exists('Tipo', $data) &&
                 array_key_exists('IdentificativoSdI', $data) &&
                 array_key_exists('NomeFile', $data)
             ) {
-                return $this->received($data);
+                $this->received($data);
             } else {
                 // Check for request integrity
                 if (
@@ -67,30 +61,58 @@ abstract class FatturaElettronicaWebhook
                     !array_key_exists('NomeFile', $data) ||
                     !array_key_exists('File', $data)
                 ) {
-                    // For example, if processing is successful
-                    http_response_code(422); // HTTP 200 OK
-                    header('Content-Type: application/json');
-                    // Process response if needed
-                    return json_encode([
-                        'message' => 'missing payload data'
-                    ]);
+                    $this->response('Missing payload data', 422);
                 }
 
-                return $this->updated(new FileSdI((object)$data));
+                $this->updated(new FileSdI((object)$data));
             }
 
         } catch (Exception $e) {
             \Log::error($e->getMessage());
-
-            // For example, if processing is successful
-            http_response_code(400); // HTTP 400 OK
-            header('Content-Type: application/json');
-            // Process response if needed
-            return json_encode([
-                'message' => 'Unable to generate sdi file'
-            ]);
+            $this->response('Unable to generate sdi file', 400);
         }
 
+    }
+
+    /**
+     * Called to completed endpoint handle
+     * @param $message
+     * @return void
+     */
+    public function ack($message = 'ACK')
+    {
+        $this->response($message, 200);
+    }
+
+    /**
+     * Called to block endpoint handle
+     * @param $message
+     * @return void
+     */
+    public function nack($message = 'NACK')
+    {
+        $this->response($message, 400);
+    }
+
+    /**
+     * @param mixed $message
+     * @param int $status
+     * @return void
+     */
+    protected function response(mixed $message, int $status = 200)
+    {
+        // Set HTTP status code
+        http_response_code($status); // HTTP 401 Unauthorized
+        // Set content-type to JSON
+        header('Content-Type: application/json');
+
+        // Output JSON response
+        echo json_encode([
+            'message' => $message
+        ]);
+
+        // Ensure no further output
+        exit();
     }
 
     /**
