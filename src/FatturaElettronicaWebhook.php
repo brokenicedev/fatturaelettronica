@@ -36,7 +36,7 @@ abstract class FatturaElettronicaWebhook
         $validator = new DefaultSignatureValidator();
 
         try {
-            $isValid = $validator->isValid($headerData['Signature'], $this->signatureSecret(), $input);
+            $isValid = $validator->isValid($headerData['signature'], $this->signatureSecret(), $input);
             if (!$isValid) {
                 // For example, if processing is successful
                 http_response_code(401); // HTTP 400 OK
