@@ -3,6 +3,7 @@
 namespace Brokenice\FatturaElettronica;
 
 use Exception;
+use JetBrains\PhpStorm\NoReturn;
 
 abstract class FatturaElettronicaWebhook
 {
@@ -76,20 +77,20 @@ abstract class FatturaElettronicaWebhook
 
     /**
      * Called to completed endpoint handle
-     * @param $message
+     * @param string $message
      * @return void
      */
-    public function ack($message = 'ACK')
+    #[NoReturn] public function ack(string $message = 'ACK'): void
     {
         $this->response($message, 200);
     }
 
     /**
      * Called to block endpoint handle
-     * @param $message
+     * @param string $message
      * @return void
      */
-    public function nack($message = 'NACK')
+    #[NoReturn] public function nack(string $message = 'NACK'): void
     {
         $this->response($message, 400);
     }
@@ -99,7 +100,7 @@ abstract class FatturaElettronicaWebhook
      * @param int $status
      * @return void
      */
-    protected function response(mixed $message, int $status = 200)
+    #[NoReturn] protected function response(mixed $message, int $status = 200): void
     {
         // Set HTTP status code
         http_response_code($status); // HTTP 401 Unauthorized
@@ -118,23 +119,23 @@ abstract class FatturaElettronicaWebhook
     /**
      * Triggered when new invoice did receive from gateway
      * @param array $params
-     * @return mixed
+     * @return void
      */
-    public abstract function received(array $params): mixed;
+    public abstract function received(array $params): void;
 
     /**
      * Triggered when an invoice receive an update status
      * @param FileSdI $fileSdI
-     * @return mixed
+     * @return void
      */
-    public abstract function updated(FileSdI $fileSdI): mixed;
+    public abstract function updated(FileSdI $fileSdI): void;
 
     /**
      * Triggered when there is an error sending an invoice
      * @param mixed $exception
-     * @return mixed
+     * @return void
      */
-    public abstract function failed(mixed $exception): mixed;
+    public abstract function failed(mixed $exception): void;
 
     /**
      * Signature to sign all the requests
